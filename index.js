@@ -12,8 +12,9 @@ mongoose.connect(MONGODB_URI, {
   useUnifiedTopology: true
 }).then (() => {
   console.log('Database connected.');
-  server.start(PORT);
 });
+
+server.start(PORT);
 
 
 
