@@ -2,24 +2,21 @@ const base64 = require('base-64');
 const User = require('../models/user-schema');
 
 async function basicAuth (req, res, next) {
-  const authorization = req.headers.authorization
-  if (!authorization){
-    next(new Error('No authorization header'))
-  } else {
+  try {
+    const authorization = req.headers.authorization
+    if (!authorization){
+      next(new Error('No authorization header'))
+    } else {
 
-  const basic = authorization.split(' ').pop();
-  const decode = base64.decode(basic);
-  const [username, password] = decode.split(':');
-  console.log(username, password);
+    const basic = authorization.split(' ').pop();
+    const decode = base64.decode(basic);
+    const [username, password] = decode.split(':');
 
-  const valid = await User.authenticateBasic(username, password);
-  if (valid) {
+    const user = await User.authenticateBasic(username, password);
+    req.token = user.generateToken()
     next();
-  }
-  else 
-    next('username or password are wrong');
-  }
-
+    } 
+  } catch (err) {next(err.message);}
 }
 
 module.exports = basicAuth;
